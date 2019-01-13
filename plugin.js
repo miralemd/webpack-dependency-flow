@@ -10,10 +10,10 @@ const normalizePath = (s) => {
 
 const nm = /node_modules/;
 
-function traverse(modules, table) {
+function traverse(modules, links, mods) {
   modules.forEach((m) => {
     if (m.modules) {
-      traverse(m.modules, table);
+      traverse(m.modules, links);
     } else if (!nm.test(m.issuerName)) {
       const from = normalizePath(
         m.issuerPath == null
@@ -21,7 +21,12 @@ function traverse(modules, table) {
           : m.issuerPath[m.issuerPath.length - 1].identifier,
       );
       const to = normalizePath(m.identifier);
-      table.push([from, to, m.size]);
+      if (!mods[to]) {
+        mods[to] = {
+          size: m.size,
+        };
+      }
+      links.push([from, to]);
     }
   });
 }
@@ -41,9 +46,14 @@ class DependencyFlow {
       if (!f) {
         return;
       }
-      const table = [];
-      traverse(compilation.getStats().toJson().modules, table);
-      f.update(JSON.stringify(table));
+      const links = [];
+      const modules = {};
+
+      traverse(compilation.getStats().toJson().modules, links, modules);
+      f.update(JSON.stringify({
+        links,
+        modules,
+      }));
     });
   }
 }
