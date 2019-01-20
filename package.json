@@ -1,8 +1,11 @@
 {
   "name": "webpack-dependency-flow",
-  "version": "0.2.0",
-  "description": "",
-  "keywords": [],
+  "version": "0.3.0",
+  "description": "Visualize webpack module dependency flow",
+  "keywords": [
+    "webpack",
+    "webpack-plugin"
+  ],
   "author": "miralemd",
   "license": "MIT",
   "main": "plugin.js",
